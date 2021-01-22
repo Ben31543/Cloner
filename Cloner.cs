@@ -8,30 +8,33 @@ namespace ObjectCloner
     {
         public static T DeepClone<T>(T cloneableObject) where T : new()
         {
-            var clonedObject = new T();
+            var newObject = new T();
 
             Type cloneableType = typeof(T);
             MemberInfo[] members = cloneableType.GetProperties();
-            
-            // fields
 
             foreach (PropertyInfo property in members)
             {
-                if (property.PropertyType.IsClass)
+                if (property.PropertyType.IsValueType || property.PropertyType.IsEnum || property.PropertyType.Equals(typeof(string)))
                 {
-                    //create object
-                    //fill fields & properties using recursion
+                    property.SetValue(newObject, property.GetValue(cloneableObject, null));
                 }
 
-                property.SetValue(clonedObject, property.GetValue(cloneableObject, null));
+                else
+                {
+                    Type subType = property.GetType();
+                    var classTypeProperty = property.GetValue(cloneableObject, null);
+
+                    property.SetValue(newObject, DeepClone(classTypeProperty));
+                }
             }
 
-            foreach (FieldInfo field in members)
-            {
-                field.SetValue(clonedObject, field.GetValue(cloneableObject));
-            }
+            //foreach (FieldInfo field in members)
+            //{
+            //    field.SetValue(clonedObject, field.GetValue(cloneableObject));
+            //}
 
-            return clonedObject;
+            return newObject;
         }
     }
 }
