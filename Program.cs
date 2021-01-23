@@ -18,7 +18,7 @@ namespace ObjectCloner
                 }
             };
 
-            var anotherUser = Cloner.DeepClone(user);
+            var anotherUser = Cloner.Clone(user);
 
             user.Age = 40;
             user.Account.Id = 16;
