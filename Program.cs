@@ -1,33 +1,44 @@
 ﻿using System;
+using System.Net.Mime;
+using System.Threading;
 
 namespace ObjectCloner
 {
     class Program
     {
+        private static Mutex mutex = null;
+        const string appName = "ObjectCloner";
+
         static void Main(string[] args)
         {
-            var user = new User
+            bool applicationIsRunning;
+            mutex = new Mutex(true, appName, out applicationIsRunning);
+
+            if (applicationIsRunning)
             {
-                Age = 17,
-                Name = "Ben",
-                Id = 9,
-                Account = new Account
+                var user = new User
                 {
-                    Id = 1,
-                    Nickname = "benatanesyan"
-                }
-            };
+                    Age = 17,
+                    Name = "Ben",
+                    Id = 9,
+                    Account = new Account
+                    {
+                        Id = 1,
+                        Nickname = "benatanesyan"
+                    }
+                };
 
-            var anotherUser = Cloner.Clone(user);
+                var anotherUser = new object();
 
-            user.Age = 40;
-            user.Account.Id = 16;
+                user.Age = 40;
+                user.Account.Id = 16;
 
 
-
-            Console.WriteLine(user + Environment.NewLine);
-
-            Console.WriteLine(anotherUser);
+                Console.WriteLine(user);
+                Console.WriteLine();
+                Console.WriteLine(anotherUser);
+                Console.Read();
+            }
         }
     }
 }
